@@ -1,0 +1,84 @@
+﻿<!-- Views/Pedidos/Index.cshtml -->
+@model List<SistemaLicencias.AdminApp.Models.ViewModels.PedidoViewModel>
+@{
+    ViewData["Title"] = "Gestión de Pedidos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-cart-check"></i> Pedidos</h2>
+    <div class="btn-group">
+        <a asp-action="Index" class="btn btn-outline-primary @(ViewBag.EstadoFiltro == null ? "active" : "")">
+            Todos
+        </a>
+        <a asp-action="Index" asp-route-estado="Procesando"
+           class="btn btn-outline-warning @(ViewBag.EstadoFiltro == "Procesando" ? "active" : "")">
+            Procesando
+        </a>
+        <a asp-action="Index" asp-route-estado="Completado"
+           class="btn btn-outline-success @(ViewBag.EstadoFiltro == "Completado" ? "active" : "")">
+            Completados
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="tablaPedidos" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Pedido</th>
+                        <th>Cliente</th>
+                        <th>Email</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Estado Pago</th>
+                        <th>Estado Pedido</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pedido in Model)
+                    {
+                        <tr>
+                            <td><strong>#@pedido.IdPedido</strong></td>
+                            <td>@pedido.NombreCliente</td>
+                            <td>@pedido.EmailCliente</td>
+                            <td>@pedido.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td><strong>S/ @pedido.Total.ToString("N2")</strong></td>
+                            <td>
+                                <span class="badge bg-@(pedido.EstadoPago == "Pagado" ? "success" : "warning")">
+                                    @pedido.EstadoPago
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-@(pedido.EstadoPedido == "Completado" ? "success" : "info")">
+                                    @pedido.EstadoPedido
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="Detalle" asp-route-id="@pedido.IdPedido"
+                                   class="btn btn-sm btn-primary">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#tablaPedidos').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                },
+                order: [[0, 'desc']]
+            });
+        });
+    </script>
+}

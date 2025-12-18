@@ -1,0 +1,63 @@
+# .NET Core
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+bld/
+[Tt]emp/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+_ReSharper*/
+*.VC.db
+
+# Rider
+.idea/
+*.sln.iml
+
+# Docker
+docker-compose.override.yml  # Puede tener configs locales
+.env                          # Variables de entorno
+docker-data/                  # Si tienes volúmenes locales
+
+# Base de datos (dependiendo de tu motor)
+*.mdf
+*.ldf
+*.sqlite
+App_Data/
+
+# Archivos de publicación
+publish/
+*.pubxml
+
+# NuGet
+[Nn]u[Gg]et/
+*.nupkg
+packages/
+
+# Específico para tu estructura
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/appsettings.Secrets.json
+**/secrets.json
+
+# Archivos de usuario
+**/.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs y temporales
+*.log
+*.tmp
+*.cache
+
+# Excepciones (archivos que SÍ subir)
+!**/appsettings.json          # Solo configuración base
+!**/Dockerfile                # Si tienes Dockerfiles por proyecto
+!docker-compose.yml           # Tu compose principal

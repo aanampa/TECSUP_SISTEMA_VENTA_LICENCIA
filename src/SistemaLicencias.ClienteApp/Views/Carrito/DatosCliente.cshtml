@@ -1,0 +1,59 @@
+﻿<!-- Views/Carrito/DatosCliente.cshtml - Actualizar el action del form -->
+@model SistemaLicencias.ClienteApp.Models.ClienteViewModel
+@{
+    ViewData["Title"] = "Datos del Cliente";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">
+                        <i class="bi bi-person-check text-primary"></i> Datos del Cliente
+                    </h3>
+
+                    <form asp-action="ProcesarPedidoConNiubiz" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Documento" class="form-label"></label>
+                            <input asp-for="Documento" class="form-control" placeholder="DNI o RUC" />
+                            <span asp-validation-for="Documento" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Nombre" class="form-label"></label>
+                            <input asp-for="Nombre" class="form-control" placeholder="Nombre completo" />
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="correo@ejemplo.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Las licencias serán enviadas a este correo
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-credit-card"></i> Al continuar, podrás realizar el pago seguro con tarjeta de crédito o débito a través de Niubiz.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-arrow-right-circle"></i> Continuar al Pago
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver al Carrito
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

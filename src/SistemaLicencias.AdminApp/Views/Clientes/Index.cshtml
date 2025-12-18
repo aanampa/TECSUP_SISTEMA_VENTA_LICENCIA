@@ -1,0 +1,66 @@
+﻿<!-- Views/Clientes/Index.cshtml -->
+@model List<SistemaLicencias.AdminApp.Models.ViewModels.ClienteViewModel>
+@{
+    ViewData["Title"] = "Gestión de Clientes";
+}
+
+<div class="mb-4">
+    <h2><i class="bi bi-people"></i> Clientes</h2>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table id="tablaClientes" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Documento</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Fecha Registro</th>
+                            <th>Pedidos</th>
+                            <th>Total Compras</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cliente in Model)
+                        {
+                            <tr>
+                                <td>@cliente.IdCliente</td>
+                                <td>@cliente.Documento</td>
+                                <td>@cliente.Nombre</td>
+                                <td>@cliente.Email</td>
+                                <td>@cliente.FechaRegistro.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary">@cliente.TotalPedidos</span>
+                                </td>
+                                <td>S/ @cliente.TotalCompras.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No hay clientes registrados aún.
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#tablaClientes').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                }
+            });
+        });
+    </script>
+}

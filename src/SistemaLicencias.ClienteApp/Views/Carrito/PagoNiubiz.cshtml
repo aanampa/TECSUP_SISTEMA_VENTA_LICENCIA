@@ -1,0 +1,368 @@
+﻿<!-- Views/Carrito/PagoNiubiz.cshtml -->
+@model SistemaLicencias.ClienteApp.Models.ClienteViewModel
+@{
+    ViewData["Title"] = "Pago con Niubiz";
+    var carrito = ViewBag.Carrito as SistemaLicencias.ClienteApp.Models.CarritoViewModel;
+    var merchantId = ViewBag.MerchantId as string;
+    var sessionToken = ViewBag.SessionToken as string;
+    var purchaseNumber = ViewBag.PurchaseNumber as string;
+    var amount = ViewBag.Amount as decimal?;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">
+                        <i class="bi bi-credit-card text-primary"></i> Pago Seguro con Niubiz
+                    </h3>
+
+                    <!-- Resumen de compra -->
+                    <div class="alert alert-info mb-4">
+                        <h5><i class="bi bi-info-circle"></i> Resumen de tu Compra</h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-6">
+                                <p><strong>N° de Pedido:</strong> @purchaseNumber</p>
+                                <p><strong>Cliente:</strong> @Model.Nombre</p>
+                                <p><strong>Email:</strong> @Model.Email</p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <p><strong>Total a Pagar:</strong></p>
+                                <h3 class="text-primary">S/ @amount?.ToString("N2")</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del pago -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-shield-check text-success"></i> Proceso de Pago Seguro
+                            </h5>
+                            <ol class="mb-0">
+                                <li>Haz clic en el botón "Pagar con Niubiz"</li>
+                                <li>Se abrirá una ventana segura de Niubiz</li>
+                                <li>Ingresa los datos de tu tarjeta</li>
+                                <li>Confirma el pago</li>
+                                <li>Recibirás tus licencias por email</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Botón de pago Niubiz -->
+                    <div class="text-center mb-4">
+                        <input type="hidden" id="transactionToken" name="transactionToken" />
+
+                        <!-- Botón que abrirá el modal de Niubiz -->
+                        <button type="button" id="btnPagarNiubiz" class="btn btn-success btn-lg px-5 py-3">
+                            <i class="bi bi-lock-fill"></i> Pagar con Niubiz - S/ @amount?.ToString("N2")
+                        </button>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="bi bi-shield-check"></i>
+                        1Tu pago es procesado de forma segura por Niubiz (Visanet Perú).
+                        Los datos de tu tarjeta no pasan por nuestro servidor.
+                    </div>
+
+                    <div class="d-grid">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver al Carrito
+                        </a>
+                    </div>
+
+                    <!-- Loader para cuando se procesa el pago -->
+                    <div id="loader" class="text-center mt-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Procesando...</span>
+                        </div>
+                        <p class="mt-2">Procesando tu pago...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Productos</h5>
+                    <hr>
+                    @if (carrito?.Items != null)
+                    {
+                        @foreach (var item in carrito.Items)
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>@item.Nombre (x@item.Cantidad)</span>
+                                <strong>S/ @item.Subtotal.ToString("N2")</strong>
+                            </div>
+                        }
+                        <hr>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <strong>S/ @carrito.Subtotal.ToString("N2")</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>IGV (18%):</span>
+                            <strong>S/ @carrito.IGV.ToString("N2")</strong>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <h5>Total:</h5>
+                            <h5 class="text-primary">S/ @carrito.Total.ToString("N2")</h5>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Script de Niubiz -->
+    <script type="text/javascript" src="@ViewBag.NiubizScriptUrl"></script>
+
+    <script>
+        // Configuración Niubiz
+        const sessionToken = '@sessionToken';
+        const merchantId = '@merchantId';
+        const purchaseNumber = '@purchaseNumber';
+        const amount = parseFloat(@(amount ?? 0).toFixed(2)); // Redondear a 2 decimales
+        const customerEmail = '@Model.Email';
+
+        console.log('=== Configuración Niubiz ===');
+        console.log('Session Token:', sessionToken);
+        console.log('Merchant ID:', merchantId);
+        console.log('Purchase Number:', purchaseNumber);
+        console.log('Amount:', amount);
+        console.log('Email:', customerEmail);
+
+        // Validar que todos los parámetros existan
+        if (!sessionToken || sessionToken === '') {
+            console.error('ERROR: Session Token está vacío');
+            alert('Error: No se pudo generar el token de sesión. Por favor intenta nuevamente.');
+        }
+
+        if (!merchantId || merchantId === '') {
+            console.error('ERROR: Merchant ID está vacío');
+            alert('Error: Configuración de comercio no encontrada.');
+        }
+
+        if (!purchaseNumber || purchaseNumber === '') {
+            console.error('ERROR: Purchase Number está vacío');
+        }
+
+        if (!amount || amount === 0) {
+            console.error('ERROR: Amount es 0 o está vacío');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof VisanetCheckout === 'undefined') {
+                console.error('ERROR: Niubiz script no cargado');
+                alert('Error al cargar el sistema de pagos. Por favor recarga la página.');
+                return;
+            }
+
+            console.log('✓ Niubiz script cargado correctamente');
+
+            // Botón de pago
+            const btnPagar = document.getElementById('btnPagarNiubiz');
+
+            if (btnPagar) {
+
+
+                btnPagar.addEventListener('click', function() {
+
+                    console.log('=== Iniciando pago con Niubiz ===');
+
+                    // Validar antes de abrir
+                    if (!sessionToken || !merchantId || !purchaseNumber || !amount) {
+                        alert('Error: Faltan parámetros requeridos para el pago');
+                        console.error('Parámetros faltantes');
+                        return;
+                    }
+
+                    console.log("antes de abrirFormularioPago()");
+                    abrirFormularioPago();
+                });
+            } else {
+                console.error('ERROR: Botón btnPagarNiubiz no encontrado');
+            }
+        });
+
+        function abrirFormularioPago() {
+
+
+            console.log('=== abrirFormularioPago Configuración Niubiz ===');
+            console.log('Session Token:', sessionToken);
+            console.log('Merchant ID:', merchantId);
+            console.log('Purchase Number:', purchaseNumber);
+            console.log('Amount:', amount);
+            console.log('Email:', customerEmail);
+
+
+            try {
+                const config = {
+                    sessiontoken: sessionToken,
+                    channel: 'web',
+                    merchantid: merchantId,
+                    purchasenumber: purchaseNumber,
+                    amount: amount.toFixed(2),
+                    action: window.location.origin + '@Url.Action("ProcesarPagoNiubiz", "Carrito")',
+                    expirationminutes: '20',
+                    timeouturl: window.location.origin + '@Url.Action("Index", "Carrito")',
+                    merchantlogo: '',
+                    formbuttoncolor: '#28a745',
+                    complete: function(params) {
+                        console.log('✓ Callback complete ejecutado');
+                        console.log('Params recibidos:', params);
+
+                        if (!params || !params.transactionToken) {
+                            console.error('ERROR: No se recibió transactionToken');
+                            alert('Error: No se pudo completar el pago');
+                            return;
+                        }
+
+                        // Mostrar loader
+                        const btnPagar = document.getElementById('btnPagarNiubiz');
+                        if (btnPagar) {
+                            btnPagar.disabled = true;
+                        }
+
+                        const loader = document.getElementById('loader');
+                        if (loader) {
+                            loader.style.display = 'block';
+                        }
+
+                        // Guardar el token de transacción
+                        const tokenInput = document.getElementById('transactionToken');
+                        if (tokenInput) {
+                            tokenInput.value = params.transactionToken;
+                        }
+
+                        // Confirmar el pago en el servidor
+                        confirmarPago(params.transactionToken);
+                    },
+                    error: function(error) {
+                        console.error('✗ Callback error ejecutado');
+                        console.error('Error de Niubiz:', error);
+                        alert('Error en el proceso de pago: ' + (error.message || 'Error desconocido'));
+                    }
+                };
+
+                console.log('Configuración completa para Niubiz:');
+                console.log('- sessiontoken:', config.sessiontoken );
+                console.log('- merchantid:', config.merchantid );
+                console.log('- purchasenumber:', config.purchasenumber );
+                console.log('- amount:', config.amount );
+                console.log('- action:', config.action );
+                console.log('Full config:', config);
+                console.log('Llamando a VisanetCheckout.open()...');
+
+                // Abrir el formulario de pago
+                try {
+
+                    console.log("ENTRO....");
+                    
+                    VisanetCheckout.configure({
+                        sessiontoken: sessionToken,
+                        channel: 'web',
+                        merchantid: merchantId,
+                        purchasenumber: purchaseNumber,
+                        amount: amount.toFixed(2),
+                        expirationminutes: '20',
+                        timeouturl: 'about:blank',
+                        merchantlogo: '',
+                        formbuttoncolor: '#000000',
+                        action: window.location.origin + '@Url.Action("ProcesarPagoNiubiz", "Carrito")',
+                        complete: function (params) {
+
+                            alert(JSON.stringify(params));
+
+                            //
+                            if (!params || !params.transactionToken) {
+                                console.error('ERROR: No se recibió transactionToken');
+                                alert('Error: No se pudo completar el pago');
+                                return;
+                            }
+                            //
+                        }
+                    });
+
+                    VisanetCheckout.open();
+                    console.log('✓ VisanetCheckout.open() ejecutado sin errores inmediatos');
+
+                    // Verificar si el modal se abrió
+                    setTimeout(() => {
+                        console.log('Verificando si el modal de Niubiz se abrió...');
+                        const niubizModal = document.querySelector('.vnf-modal, .visanet-modal, [class*="niubiz"], [class*="visanet"]');
+                        if (niubizModal) {
+                            console.log('✓ Modal de Niubiz encontrado:', niubizModal);
+                        } else {
+                            console.warn('⚠ No se encontró el modal de Niubiz en el DOM');
+                            console.log('Posibles causas:');
+                            console.log('1. El popup fue bloqueado por el navegador');
+                            console.log('2. Error en la configuración de Niubiz');
+                            console.log('3. El modal usa otra clase CSS');
+                        }
+                    }, 1000);
+
+                } catch (openError) {
+                    console.error('✗ Error al ejecutar VisanetCheckout.open():', openError);
+                    throw openError;
+                }
+
+            } catch (error) {
+                console.error('ERROR al abrir formulario de pago:', error);
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                alert('Error al abrir el formulario de pago: ' + error.message);
+            }
+        }
+
+        async function confirmarPago(transactionToken) {
+            try {
+                console.log('=== Confirmando pago ===');
+                console.log('Transaction Token:', transactionToken);
+
+                const response = await fetch('@Url.Action("ConfirmarPagoNiubiz", "Carrito")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        transactionToken: transactionToken
+                    })
+                });
+
+                const resultado = await response.json();
+                console.log('Resultado confirmación:', resultado);
+
+                if (resultado.exito) {
+                    console.log('✓ Pago confirmado exitosamente');
+                    // Pago exitoso - redirigir a confirmación
+                    window.location.href = '@Url.Action("Confirmacion", "Carrito")';
+                } else {
+                    console.error('ERROR: Pago rechazado -', resultado.mensaje);
+                    // Error en el pago
+                    document.getElementById('btnPagarNiubiz').disabled = false;
+                    document.getElementById('loader').style.display = 'none';
+                    alert('Error: ' + resultado.mensaje);
+                }
+            } catch (error) {
+                console.error('ERROR al confirmar pago:', error);
+                document.getElementById('btnPagarNiubiz').disabled = false;
+                document.getElementById('loader').style.display = 'none';
+                alert('Error al confirmar el pago. Por favor intenta nuevamente.');
+            }
+        }
+    </script>
+}

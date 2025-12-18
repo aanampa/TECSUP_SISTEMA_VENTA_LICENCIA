@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{Asunto}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .email-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .email-body {
+            padding: 40px 30px;
+        }
+        .notification-box {
+            background-color: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .notification-box h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        .content-text {
+            color: #444;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            border-top: 1px solid #e9ecef;
+        }
+        .email-footer p {
+            margin: 5px 0;
+        }
+        .variable-info {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Notificación</h1>
+            <p>{{Asunto}}</p>
+        </div>
+        <div class="email-body">
+            <div class="notification-box">
+                <div class="content-text">
+                    {{Contenido}}
+                </div>
+            </div>
+            
+            <p class="content-text">
+                Si tienes alguna pregunta, no dudes en contactarnos.
+            </p>
+        </div>
+        <div class="email-footer">
+            <p><strong>Sistema de Notificaciones</strong></p>
+            <p>© {{Año}} Todos los derechos reservados</p>
+            <p style="margin-top: 15px; color: #999;">
+                Este es un mensaje automático. Por favor, no responder a este correo.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

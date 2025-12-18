@@ -1,0 +1,150 @@
+﻿<!-- Views/Dashboard/Index.cshtml -->
+@model SistemaLicencias.AdminApp.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Estadísticas Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Ventas Hoy</h6>
+                        <h3 class="mb-0">S/ @Model.Estadisticas.VentasHoy.ToString("N2")</h3>
+                    </div>
+                    <div class="text-primary" style="font-size: 2.5rem;">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Ventas del Mes</h6>
+                        <h3 class="mb-0">S/ @Model.Estadisticas.VentasMes.ToString("N2")</h3>
+                    </div>
+                    <div class="text-success" style="font-size: 2.5rem;">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Pedidos del Mes</h6>
+                        <h3 class="mb-0">@Model.Estadisticas.PedidosMes</h3>
+                    </div>
+                    <div class="text-warning" style="font-size: 2.5rem;">
+                        <i class="bi bi-cart-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Licencias Disponibles</h6>
+                        <h3 class="mb-0">@Model.Estadisticas.LicenciasDisponibles</h3>
+                    </div>
+                    <div class="text-info" style="font-size: 2.5rem;">
+                        <i class="bi bi-key"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Productos Más Vendidos -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">
+                    <i class="bi bi-trophy text-warning"></i> Productos Más Vendidos
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th class="text-center">Cantidad</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var producto in Model.ProductosMasVendidos)
+                            {
+                                <tr>
+                                    <td>@producto.NombreProducto</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary">@producto.CantidadVendida</span>
+                                    </td>
+                                    <td class="text-end">S/ @producto.TotalVentas.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pedidos Recientes -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">
+                    <i class="bi bi-clock-history text-info"></i> Pedidos Recientes
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Pedido</th>
+                                <th>Cliente</th>
+                                <th class="text-end">Total</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var pedido in Model.PedidosRecientes)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-controller="Pedidos" asp-action="Detalle" asp-route-id="@pedido.IdPedido">
+                                            #@pedido.IdPedido
+                                        </a>
+                                    </td>
+                                    <td>@pedido.NombreCliente</td>
+                                    <td class="text-end">S/ @pedido.Total.ToString("N2")</td>
+                                    <td>
+                                        <span class="badge bg-@(pedido.EstadoPedido == "Completado" ? "success" : "warning")">
+                                            @pedido.EstadoPedido
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

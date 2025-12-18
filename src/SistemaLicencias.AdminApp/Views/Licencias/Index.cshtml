@@ -1,0 +1,92 @@
+﻿<!-- Views/Licencias/Index.cshtml -->
+@model List<SistemaLicencias.AdminApp.Models.ViewModels.LicenciaViewModel>
+@{
+    ViewData["Title"] = "Gestión de Licencias";
+}
+
+<div class="mb-4">
+    <h2><i class="bi bi-key"></i> Licencias</h2>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table id="tablaLicencias" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Producto</th>
+                            <th>Código Licencia</th>
+                            <th>Estado</th>
+                            <th>Pedido</th>
+                            <th>Fecha Asignación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var licencia in Model)
+                        {
+                            <tr>
+                                <td>@licencia.IdLicencia</td>
+                                <td>@licencia.NombreProducto</td>
+                                <td><code>@licencia.CodigoLicencia</code></td>
+                                <td>
+                                    @if (licencia.IdPedido.HasValue)
+                                    {
+                                        <span class="badge bg-warning">Asignada</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Disponible</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (licencia.IdPedido.HasValue)
+                                    {
+                                        <a asp-controller="Pedidos" asp-action="Detalle"
+                                           asp-route-id="@licencia.IdPedido">
+                                            #@licencia.IdPedido
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (licencia.FechaAsignacion.HasValue)
+                                    {
+                                        @licencia.FechaAsignacion.Value.ToString("dd/MM/yyyy")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No hay licencias registradas aún.
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#tablaLicencias').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                }
+            });
+        });
+    </script>
+}

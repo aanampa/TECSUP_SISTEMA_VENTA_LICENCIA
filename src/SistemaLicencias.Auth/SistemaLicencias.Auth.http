@@ -1,0 +1,6 @@
+@SistemaLicencias.Auth_HostAddress = http://localhost:5121
+
+GET {{SistemaLicencias.Auth_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

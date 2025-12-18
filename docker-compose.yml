@@ -1,0 +1,153 @@
+services:
+  # -------------------------
+  # 1. BASE DE DATOS (SQL Server 2022)
+  # -------------------------
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql_server_custom
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=PasswordFuerte123!
+    ports:
+      - "1445:1433" # Puerto externo 1445 para no chocar con tu local
+    restart: always
+
+# -------------------------
+  # 2. INICIALIZADOR DE BD (Actualizado para correr 2 scripts)
+  # -------------------------
+  sql-setup:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql_setup_task
+    depends_on:
+      - sql-server
+    volumes:
+      - ./src/db:/docker-entrypoint-initdb.d
+    command: >
+      /bin/bash -c "
+      echo '⏳ Esperando 30 segundos a que SQL Server inicie...';
+      sleep 30;
+      
+      echo '🚀 1. Ejecutando init_seguridad_db.sql...';
+      /opt/mssql-tools18/bin/sqlcmd -S sql-server -U sa -P PasswordFuerte123! -C -i /docker-entrypoint-initdb.d/init_seguridad_db.sql;
+      
+      echo '🚀 2. Ejecutando init_sistema_bd.sql (NUEVO)...';
+      /opt/mssql-tools18/bin/sqlcmd -S sql-server -U sa -P PasswordFuerte123! -C -i /docker-entrypoint-initdb.d/init_sistema_db.sql;
+      
+      echo '✅ Todas las bases de datos inicializadas.';
+      "
+  # -------------------------
+  # 3. AUTH API (Puerto 9091)
+  # -------------------------
+  auth-api:
+    image: sistema-licencias-auth
+    build:
+      context: .
+      dockerfile: src/SistemaLicencias.Auth/Dockerfile
+    container_name: auth_container
+    depends_on:
+      - sql-server
+    ports:
+      - "9091:8081"
+      - "9081:8080" # HTTP (Nuevo puerto para pruebas)
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./src/SistemaLicencias.Auth/appsettings.json:/app/appsettings.json
+      - ~/.aspnet/https:/https:ro
+    restart: always
+
+  # -------------------------
+  # 4. MAILING API (Puerto 9092)
+  # -------------------------
+  mailing-api:
+    image: sistema-licencias-mailing
+    build:
+      context: .
+      dockerfile: src/SistemaLicencias.Mailing/Dockerfile
+    container_name: mailing_container
+    ports:
+      - "9092:8081"
+      - "9082:8080" # HTTP (Nuevo puerto para pruebas)
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./src/SistemaLicencias.Mailing/appsettings.json:/app/appsettings.json
+      - ./src/SistemaLicencias.Mailing/Resources:/app/Resources
+      - ~/.aspnet/https:/https:ro
+    restart: always
+# -------------------------
+  # 5. SISTEMA API (Puerto 9093)
+  # -------------------------
+  sistema-api:
+    image: sistema-licencias-sistema
+    build:
+      context: .
+      # ¡Asegúrate que esta ruta coincida con tu carpeta real!
+      dockerfile: src/SistemaLicencias/Dockerfile 
+    container_name: sistema_container
+    depends_on:
+      - sql-server
+    ports:
+      - "9093:8081" # Nuevo Puerto HTTPS
+      - "9083:8080" # HTTP (Nuevo puerto para pruebas)
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./src/SistemaLicencias/appsettings.json:/app/appsettings.json
+      - ~/.aspnet/https:/https:ro
+    restart: always    
+
+  # -------------------------
+  # 6. CLIENTE APP (Consume otras APIs - Puerto 9094)
+  # -------------------------
+  cliente-app:
+    image: sistema-licencias-clienteapp
+    build:
+      context: .
+      dockerfile: src/SistemaLicencias.ClienteApp/Dockerfile
+    container_name: cliente_app_container
+    depends_on:
+      - auth-api
+      - sistema-api
+      - mailing-api
+    ports:
+      - "9094:8081" # HTTPS Externo
+      - "9084:8080" # HTTP (Nuevo puerto para pruebas)      
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Configuración de URLs internas (Docker DNS)
+      # Usamos el nombre del servicio definido arriba en este mismo archivo
+      - ApiUrls__Auth=http://auth-api:8080
+      - ApiUrls__Sistema=http://sistema-api:8080
+      - ApiUrls__Mailing=http://mailing-api:8080
+    volumes:
+      - ./src/SistemaLicencias.ClienteApp/appsettings.json:/app/appsettings.json
+      - ~/.aspnet/https:/https:ro
+    restart: always
+
+      # -------------------------
+  # 7. ADMIN APP (Puerto 9095)
+  # -------------------------
+  admin-app:
+    image: sistema-licencias-adminapp
+    build:
+      context: .
+      dockerfile: src/SistemaLicencias.AdminApp/Dockerfile
+    container_name: admin_app_container
+    depends_on:
+      - auth-api
+      - sistema-api
+      - mailing-api
+    ports:
+      - "9095:8081" # Puerto HTTPS Externo
+      - "9085:8080" # HTTP (Nuevo puerto para pruebas)      
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # URLs para consumo interno (Docker Network)
+      - ApiUrls__Auth=http://auth-api:8080
+      - ApiUrls__Sistema=http://sistema-api:8080
+      - ApiUrls__Mailing=http://mailing-api:8080
+    volumes:
+      - ./src/SistemaLicencias.AdminApp/appsettings.json:/app/appsettings.json
+      - ~/.aspnet/https:/https:ro
+    restart: always

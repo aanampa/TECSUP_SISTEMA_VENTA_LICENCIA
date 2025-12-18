@@ -1,0 +1,32 @@
+﻿<!-- Views/Carrito/Confirmacion.cshtml -->
+@{
+    ViewData["Title"] = "Compra Exitosa";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm text-center">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                    </div>
+                    <h2 class="text-success mb-3">¡Compra Exitosa!</h2>
+                    <p class="lead mb-4">
+                        Tu pedido ha sido procesado correctamente.
+                    </p>
+                    <div class="alert alert-info">
+                        <i class="bi bi-envelope"></i>
+                        Hemos enviado las licencias a tu correo electrónico.
+                    </div>
+                    <p class="text-muted mb-4">
+                        Por favor, revisa tu bandeja de entrada y carpeta de spam.
+                    </p>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
+                        <i class="bi bi-house"></i> Volver al Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

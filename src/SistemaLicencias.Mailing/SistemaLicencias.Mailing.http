@@ -1,0 +1,6 @@
+@SistemaLicencias.Mailing_HostAddress = http://localhost:5277
+
+GET {{SistemaLicencias.Mailing_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

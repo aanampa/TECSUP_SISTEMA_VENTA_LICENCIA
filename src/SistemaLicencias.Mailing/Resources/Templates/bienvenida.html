@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{Asunto}}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #e9ecef;
+        }
+        .wrapper {
+            width: 100%;
+            padding: 20px 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .hero {
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            padding: 60px 40px;
+            text-align: center;
+            color: white;
+        }
+        .hero h1 {
+            font-size: 36px;
+            margin: 0 0 15px 0;
+        }
+        .hero p {
+            font-size: 18px;
+            margin: 0;
+            opacity: 0.95;
+        }
+        .content {
+            padding: 50px 40px;
+        }
+        .welcome-message {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #495057;
+            margin-bottom: 30px;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .highlight-box h2 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+        .info-section {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .info-section h3 {
+            color: #0072ff;
+            margin-top: 0;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        .footer p {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <div class="hero">
+                <h1>¡Bienvenido! 👋</h1>
+                <p>{{Asunto}}</p>
+            </div>
+            
+            <div class="content">
+                <div class="welcome-message">
+                    <p>Hola <strong>{{NombreUsuario}}</strong>,</p>
+                    <br>
+                    <p>{{Contenido}}</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h2>Estamos emocionados de tenerte aquí</h2>
+                    <p>Prepárate para una experiencia increíble</p>
+                </div>
+
+                <div class="info-section">
+                    <h3>¿Qué sigue?</h3>
+                    <p>Ahora que eres parte de nuestra comunidad, puedes:</p>
+                    <ul>
+                        <li>Explorar todas las funcionalidades</li>
+                        <li>Personalizar tu perfil</li>
+                        <li>Conectar con otros usuarios</li>
+                        <li>Empezar a disfrutar de nuestros servicios</li>
+                    </ul>
+                </div>
+
+                <div style="text-align: center;">
+                    <a href="{{UrlAccion}}" class="cta-button">Comenzar Ahora</a>
+                </div>
+
+                <p style="margin-top: 30px; color: #6c757d; font-size: 14px;">
+                    Si tienes alguna pregunta, nuestro equipo de soporte está aquí para ayudarte.
+                </p>
+            </div>
+
+            <div class="footer">
+                <p><strong>Equipo de Soporte</strong></p>
+                <div class="social-links">
+                    <a href="#">Facebook</a> | 
+                    <a href="#">Twitter</a> | 
+                    <a href="#">Instagram</a>
+                </div>
+                <p>© {{Año}} - Todos los derechos reservados</p>
+                <p style="font-size: 12px; opacity: 0.8; margin-top: 15px;">
+                    Has recibido este correo porque te registraste en nuestro servicio.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
